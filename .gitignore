@@ -216,3 +216,11 @@ __marimo__/
 
 # Model
 .pt
+
+# ignore all data
+chroma_db/*
+
+# but keep folder structure
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!chroma_db/.gitkeep
