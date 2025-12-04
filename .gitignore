@@ -135,7 +135,6 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
 .envrc
 .venv
 env/
@@ -209,10 +208,10 @@ __marimo__/
 # Mac
 .DS_Store
 
-# Secrets & Config
-.env
-.env.*
-secrets.json
-config.yaml
-settings.yaml
-streamlit/secrets.toml
+# DB
+.sqlite3
+.bin
+.pickle
+
+# Model
+.pt
