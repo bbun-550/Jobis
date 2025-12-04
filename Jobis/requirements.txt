@@ -1,0 +1,38 @@
+# ----------------------------
+# Core ML / Embedding
+# ----------------------------
+sentence-transformers==5.1.2
+# transformers==4.40.1
+# torch==2.1.2
+
+# ----------------------------
+# Vector Database
+# ----------------------------
+chromadb==0.5.5
+
+# ----------------------------
+# Data Processing
+# ----------------------------
+# pandas==2.0.3
+# numpy==1.24.4
+# scikit-learn==1.2.2
+
+# ----------------------------
+# Web UI (Streamlit)
+# ----------------------------
+# streamlit==1.32.0
+
+# ----------------------------
+# LangChain for RAG
+# ----------------------------
+langchain==0.1.13
+langchain-core==0.1.29
+langchain-community==0.0.28
+langchain-huggingface==0.0.6
+langchain-chroma==0.1.3
+
+# ----------------------------
+# Utility
+# ----------------------------
+python-dotenv==1.0.1
+tqdm==4.66.2
