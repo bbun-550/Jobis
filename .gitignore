@@ -221,6 +221,6 @@ __marimo__/
 chroma_db/*
 
 # but keep folder structure
-!data/raw/.gitkeep
-!data/processed/.gitkeep
-!chroma_db/.gitkeep
+!Jobis/data/raw/.gitkeep
+!Jobis/data/processed/.gitkeep
+!Jobis/chroma_db/.gitkeep
