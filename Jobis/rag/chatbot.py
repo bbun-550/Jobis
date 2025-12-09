@@ -32,7 +32,7 @@ class JobisChatbot:
         )
         self.llm = ChatGoogleGenerativeAI(
             model="gemini-2.5-flash",
-            temperature=0.2, # 사실 기반 답변을 위해 창의성 낮춤
+            temperature=0.4, # 사실 기반 답변을 위해 창의성 낮춤
             google_api_key=os.getenv("GOOGLE_API_KEY")
         )
         self.chain = self._build_chain()

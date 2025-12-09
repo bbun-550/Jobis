@@ -1,5 +1,14 @@
 import streamlit as st
 import base64
+import sys
+from pathlib import Path
+
+# 프로젝트 루트 경로를 sys.path에 추가 (ui/ 상위가 루트)
+ROOT_DIR = Path(__file__).resolve().parents[1]
+if str(ROOT_DIR) not in sys.path:
+    sys.path.append(str(ROOT_DIR))
+
+from rag.chatbot import JobisChatbot
 
 # ---------------------------
 # Title with Logo
@@ -8,7 +17,8 @@ def load_image_base64(path):
     with open(path, "rb") as img_file:
         return base64.b64encode(img_file.read()).decode()
 
-logo_base64 = load_image_base64("./static/logo.png")
+STATIC_DIR = Path(__file__).resolve().parents[1] / "static" / "logo.png"
+logo_base64 = load_image_base64(STATIC_DIR)
 
 st.markdown(
     f"""
@@ -64,6 +74,9 @@ st.markdown(bubble_style, unsafe_allow_html=True)
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
+if "chatbot" not in st.session_state:
+    st.session_state.chatbot = JobisChatbot()
+
 # ---------------------------
 # Display Chat Messages
 # ---------------------------
@@ -95,11 +108,17 @@ for msg in st.session_state.messages:
 # ---------------------------
 user_input = st.chat_input("질문을 입력하세요")
 
+# 글자가 하나씩 출력되는 애니메이션(streaming)
+def stream_answer(text):
+    import time
+    for char in text:
+        yield char
+        time.sleep(0.02)  # 속도 조절 가능
+
 if user_input:
-    # Save user message
     st.session_state.messages.append({"role": "user", "content": user_input})
 
-    # Display user message
+    # 사용자 메시지 출력
     st.markdown(
         f"""
         <div class="chat-row user-row">
@@ -109,18 +128,13 @@ if user_input:
         unsafe_allow_html=True
     )
 
-    # ---- RAG 호출 위치 ----
-    bot_response = "여기에 RAG 기반 챗봇 응답이 들어갑니다."
+    # ---- RAG 호출 + 스피너 ----
+    with st.spinner("Jobis 생각 중..."):
+        bot_response = st.session_state.chatbot.ask(user_input)
 
-    # Save bot response
+    # 메시지 저장
     st.session_state.messages.append({"role": "assistant", "content": bot_response})
 
-    # Display bot message
-    st.markdown(
-        f"""
-        <div class="chat-row bot-row">
-            <div class="bot-bubble">{bot_response}</div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    # ---- 스트리밍 출력 ----
+    with st.chat_message("assistant"):
+        st.write_stream(stream_answer(bot_response))
