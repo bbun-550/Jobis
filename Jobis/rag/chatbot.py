@@ -1,14 +1,9 @@
-# rag/chatbot.py
-import os
 from dotenv import load_dotenv
+load_dotenv()
 
-# 우리가 만든 모듈들 임포트
 from rag.vectorstore import get_vectorstore
 from rag.retriever import get_retriever
 from rag.pipeline import build_rag_chain
-
-# 환경 변수 로드 (.env)
-load_dotenv()
 
 class JobisChatbot:
     def __init__(self):
@@ -16,7 +11,7 @@ class JobisChatbot:
         self.vectorstore = get_vectorstore()
         
         # 2. Retriever 생성 (retriever.py)
-        self.retriever = get_retriever(self.vectorstore, k=3)
+        self.retriever = get_retriever(self.vectorstore, k=10)
         
         # 3. RAG Chain 구축 (pipeline.py)
         self.chain = build_rag_chain(self.retriever)
