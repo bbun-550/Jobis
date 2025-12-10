@@ -5,49 +5,42 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 
 def format_docs(docs):
-    """검색된 문서들을 하나의 텍스트로 합칩니다."""
-    formatted_docs = []
+    if not docs:
+        return ""
+    
+    formatted = []
     for doc in docs:
-        # 메타데이터를 포함하여 출처를 명확히 함
         company = doc.metadata.get('company_name', 'Unknown')
         content = doc.page_content
-        formatted_docs.append(f"<기업명: {company}>\n{content}")
-    
-    return "\n\n".join(formatted_docs)
+        formatted.append(f"[{company}]\n{content}")
+        
+    return "\n\n".join(formatted)
 
 def build_rag_chain(retriever):
-    """
-    Retriever와 LLM을 연결하여 RAG Chain을 생성합니다.
-    """
-    
-    # 1. LLM 설정 (Gemini-2.5-flash)
+    # LLM 설정
     llm = ChatGoogleGenerativeAI(
         model="gemini-2.5-flash",
         temperature=0,
         google_api_key=os.getenv("GOOGLE_API_KEY")
     )
 
-    # 2. 프롬프트 템플릿 설정
     template = """
-    당신은 구직자들을 돕는 취업 컨설턴트 'JOBIS(자비스)'입니다.
-    아래 제공된 [관련 기업 정보]를 바탕으로 질문에 대해 친절하고 정확하게 답변해주세요.
+    당신은 취업 정보 전문가 'JOBIS'입니다.
+    아래 [관련 기업 정보]를 참고하여 질문에 답변해 주세요.
     
-    - 질문에 해당하는 기업이 문맥(Context)에 없다면 "죄송합니다. 해당 기업이나 내용에 대한 정보가 데이터에 없습니다."라고 솔직하게 말하세요.
-    - 질문에서 물어보는 정확한 단어가 없더라도 유사한 단어가 있다면 답변을 작성해주고, 유사한 단어가 없다면 내용을 지어내지 마세요.
-    - 답변은 보기 좋게 마크다운 형태로 정리해주세요.
-
     [관련 기업 정보]:
     {context}
-
+    
     질문: {question}
-
-    답변:
+    
+    * 정보가 있다면, 기업명과 함께 내용을 정리해 주세요.
+    * 만약 제공된 정보에 답이 없다면, "죄송합니다. 해당 내용에 대한 정보가 데이터베이스에 없습니다."라고 답해주세요.
+    * 답변:
     """
     
     prompt = PromptTemplate.from_template(template)
 
-    # 3. 체인 구성 (LCEL 문법)
-    # Retriever -> 문서 포맷팅 -> 프롬프트 -> LLM -> 문자열 출력
+    # Chain 구성
     rag_chain = (
         {"context": retriever | format_docs, "question": RunnablePassthrough()}
         | prompt

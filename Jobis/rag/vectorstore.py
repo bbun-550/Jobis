@@ -1,12 +1,20 @@
+import os
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 
-PERSIST_DIR = "data/chroma_db"  # 이미 있는 폴더
+# 절대 경로로 설정
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+PERSIST_DIR = os.path.join(BASE_DIR, 'data', 'chroma_db')
 
 def get_vectorstore():
     embeddings = HuggingFaceEmbeddings(
-        model_name="sentence-transformers/all-MiniLM-L12-v2"
+        model_name="sentence-transformers/all-MiniLM-L12-v2",
+        model_kwargs={'device': 'cpu'},
+        encode_kwargs={'normalize_embeddings': True}
     )
+
+    if not os.path.exists(PERSIST_DIR):
+        raise FileNotFoundError(f"Vector DB가 존재하지 않습니다. 경로: {PERSIST_DIR}")
 
     vectorstore = Chroma(
         persist_directory=PERSIST_DIR,
