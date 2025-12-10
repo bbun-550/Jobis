@@ -2,12 +2,11 @@ import os
 from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 
-# 절대 경로로 설정 (어디서 실행하든 DB 위치를 정확히 찾기 위함)
+# 절대 경로로 설정
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PERSIST_DIR = os.path.join(BASE_DIR, 'data', 'chroma_db')
 
 def get_vectorstore():
-    # embedding.py와 동일한 설정이어야 함
     embeddings = HuggingFaceEmbeddings(
         model_name="sentence-transformers/all-MiniLM-L12-v2",
         model_kwargs={'device': 'cpu'},

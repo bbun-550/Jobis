@@ -5,9 +5,7 @@ from langchain_core.documents import Document
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
 
-# ==========================================
-# 1. 경로 및 설정
-# ==========================================
+# 경로 및 설정
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 INPUT_FILE = os.path.join(BASE_DIR, 'data', 'processed', 'cleaned_data.json')
 PERSIST_DIRECTORY = os.path.join(BASE_DIR, 'data', 'chroma_db')
@@ -23,7 +21,6 @@ def create_documents(data):
     documents = []
     
     for item in data:
-        # [수정된 부분] -------------------------------------------------------
         # 검색 정확도를 위해 본문(page_content)에 기업명과 산업 정보를 포함시킵니다.
         company_name = item.get('company_name', 'Unknown')
         industry = item.get('industry', 'Unknown')
@@ -55,7 +52,7 @@ def build_vector_db():
     print(f"2. 문서 변환 중... (총 {len(data)}개 항목)")
     documents = create_documents(data)
     
-    # 기존 DB 삭제 후 재생성 (깨끗한 상태 유지를 위해)
+    # 기존 DB 삭제 후 재생성
     if os.path.exists(PERSIST_DIRECTORY):
         print(f"기존 DB 삭제 중... ({PERSIST_DIRECTORY})")
         shutil.rmtree(PERSIST_DIRECTORY)
@@ -90,5 +87,4 @@ def test_search(vector_store, query_text):
 
 if __name__ == "__main__":
     db = build_vector_db()
-    # 테스트: 이제 기업 이름으로 검색이 잘 되는지 확인
     test_search(db, "삼성전자의 장점은?")
