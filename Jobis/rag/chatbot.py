@@ -11,7 +11,7 @@ class JobisChatbot:
         self.vectorstore = get_vectorstore()
         
         # 2. Retriever 생성 (retriever.py)
-        self.retriever = get_retriever(self.vectorstore, k=5)
+        self.retriever = get_retriever(self.vectorstore, k=10)
         
         # 3. RAG Chain 구축 (pipeline.py)
         self.chain = build_rag_chain(self.retriever)

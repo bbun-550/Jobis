@@ -8,7 +8,7 @@ from langchain_chroma import Chroma
 # 경로 및 설정
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 INPUT_FILE = os.path.join(BASE_DIR, 'data', 'processed', 'cleaned_data.json')
-PERSIST_DIRECTORY = os.path.join(BASE_DIR, 'data', 'chroma_db')
+PERSIST_DIR = os.path.join(BASE_DIR, 'data', 'chroma_db')
 EMBEDDING_MODEL_NAME = "sentence-transformers/all-MiniLM-L12-v2"
 
 def load_processed_data():
@@ -28,7 +28,6 @@ def create_documents(data):
 
         # AI가 검색할 실제 텍스트 구성
         page_content = f"기업명: {company_name}\n산업분야: {industry}\n내용: {content_text}"
-        # -------------------------------------------------------------------
         
         metadata = {
             "company_name": company_name,
@@ -53,9 +52,9 @@ def build_vector_db():
     documents = create_documents(data)
     
     # 기존 DB 삭제 후 재생성
-    if os.path.exists(PERSIST_DIRECTORY):
-        print(f"기존 DB 삭제 중... ({PERSIST_DIRECTORY})")
-        shutil.rmtree(PERSIST_DIRECTORY)
+    if os.path.exists(PERSIST_DIR):
+        print(f"기존 DB 삭제 중... ({PERSIST_DIR})")
+        shutil.rmtree(PERSIST_DIR)
 
     print(f"3. 임베딩 모델 로드 중... ({EMBEDDING_MODEL_NAME})")
     embeddings = HuggingFaceEmbeddings(
@@ -68,10 +67,11 @@ def build_vector_db():
     vector_store = Chroma.from_documents(
         documents=documents,
         embedding=embeddings,
-        persist_directory=PERSIST_DIRECTORY
+        persist_directory=PERSIST_DIR
     )
     
-    print(f"벡터 DB 구축 완료! 저장 경로: {PERSIST_DIRECTORY}")
+    print(f"벡터 DB 구축 완료! 저장 경로: {PERSIST_DIR}")
+
     return vector_store
 
 def test_search(vector_store, query_text):
