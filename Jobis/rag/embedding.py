@@ -9,7 +9,8 @@ from langchain_chroma import Chroma
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 INPUT_FILE = os.path.join(BASE_DIR, 'data', 'processed', 'cleaned_data.json')
 PERSIST_DIR = os.path.join(BASE_DIR, 'data', 'chroma_db')
-EMBEDDING_MODEL_NAME = "sentence-transformers/all-MiniLM-L12-v2"
+# EMBEDDING_MODEL_NAME = "sentence-transformers/all-MiniLM-L12-v2"
+EMBEDDING_MODEL_NAME = "jhgan/ko-sroberta-multitask"
 
 def load_processed_data():
     if not os.path.exists(INPUT_FILE):
