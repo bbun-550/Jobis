@@ -5,7 +5,8 @@ from langchain_huggingface import HuggingFaceEmbeddings
 # 경로 및 설정
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PERSIST_DIR = os.path.join(BASE_DIR, 'data', 'chroma_db')
-EMBEDDING_MODEL_NAME = "sentence-transformers/all-MiniLM-L12-v2"
+# EMBEDDING_MODEL_NAME = "sentence-transformers/all-MiniLM-L12-v2"
+EMBEDDING_MODEL_NAME = "jhgan/ko-sroberta-multitask"
 
 def get_vectorstore():
     embeddings = HuggingFaceEmbeddings(
