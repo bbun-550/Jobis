@@ -2,10 +2,7 @@ import json
 import os
 import re
 
-# ==========================================
-# 1. 설정 및 경로 지정
-# ==========================================
-# 현재 파일(preprocessing.py)의 상위 폴더(src)의 상위 폴더(Project)를 기준으로 경로 설정
+# 경로 맟 설정
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 INPUT_FILE = os.path.join(BASE_DIR, 'data', 'raw', 'jobis_rag_data.json')
 OUTPUT_FILE = os.path.join(BASE_DIR, 'data', 'processed', 'cleaned_data.json')
@@ -13,14 +10,8 @@ OUTPUT_FILE = os.path.join(BASE_DIR, 'data', 'processed', 'cleaned_data.json')
 # 디렉터리가 없으면 생성
 os.makedirs(os.path.dirname(OUTPUT_FILE), exist_ok=True)
 
-# ==========================================
-# 2. 전처리 함수 정의
-# ==========================================
-
+# 텍스트 내의 노이즈(결측치 마커 등)를 제거하고 불필요한 공백을 정리
 def clean_text(text):
-    """
-    텍스트 내의 노이즈(결측치 마커 등)를 제거하고 불필요한 공백을 정리합니다.
-    """
     if not text:
         return ""
     
@@ -33,12 +24,8 @@ def clean_text(text):
     
     return text
 
+# 간단한 규칙(온점, 물음표, 느낌표)을 기준으로 문장을 분리
 def split_sentences(text):
-    """
-    간단한 규칙(온점, 물음표, 느낌표)을 기준으로 문장을 분리합니다.
-    한국어 처리에 특화된 kss 라이브러리를 쓰면 더 좋지만, 
-    여기서는 별도 설치 없이 regex로 구현합니다.
-    """
     if not text:
         return []
     
@@ -46,10 +33,8 @@ def split_sentences(text):
     sentences = re.split(r'(?<=[.?!])\s+', text)
     return [s for s in sentences if s.strip()]
 
+# 평점(1~5)을 기반으로 감정을 라벨링
 def get_sentiment_label(score):
-    """
-    평점(1~5)을 기반으로 감정을 라벨링합니다.
-    """
     if score is None:
         return "neutral"
     
@@ -60,10 +45,7 @@ def get_sentiment_label(score):
     else:
         return "neutral"
 
-# ==========================================
-# 3. 메인 로직
-# ==========================================
-
+# 메인 로직
 def process_data():
     print(f"Loading data from {INPUT_FILE}...")
     
@@ -90,7 +72,7 @@ def process_data():
                 "data_id": item['data_id']
             }
 
-            # --- Review 데이터 처리 ---
+            # Review 데이터 처리
             if item['type'] == 'review':
                 review_content = item.get('review', {})
                 
@@ -103,10 +85,8 @@ def process_data():
                 sentiment = get_sentiment_label(score)
                 
                 # 3. 텍스트 통합 (장점 + 단점) 및 문장 분리
-                # RAG에서는 문맥을 위해 합쳐서 처리하거나 각각 처리할 수 있습니다.
-                # 여기서는 'full_text'를 만들고 문장 분리도 수행합니다.
-                full_text = f"장점: {re_adv} 단점: {re_dis}".strip()
-                sentences = split_sentences(full_text)
+                full_text = f"장점: {re_adv} 단점: {re_dis}".strip() # 텍스트 통합
+                sentences = split_sentences(full_text) # 문장 분리
 
                 processed_item.update({
                     "score": score,
@@ -116,7 +96,7 @@ def process_data():
                     "date": review_content.get('re_date')
                 })
 
-            # --- Interview 데이터 처리 ---
+            # Interview 데이터 처리
             elif item['type'] == 'interview':
                 interview_content = item.get('interview', {})
                 
@@ -129,7 +109,7 @@ def process_data():
                 processed_item.update({
                     "content": full_text,
                     "sentences": sentences,
-                    "sentiment": "neutral" # 면접 정보는 중립으로 가정 (필요시 로직 변경 가능)
+                    "sentiment": "neutral" # 면접 정보는 중립으로 가정
                 })
 
             # 내용이 비어있지 않은 경우에만 리스트에 추가
