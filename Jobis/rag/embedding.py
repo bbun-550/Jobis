@@ -6,11 +6,10 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
 
 # 경로 및 설정
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-INPUT_FILE = os.path.join(BASE_DIR, 'data', 'processed', 'cleaned_data.json')
-PERSIST_DIR = os.path.join(BASE_DIR, 'data', 'chroma_db')
-# EMBEDDING_MODEL_NAME = "sentence-transformers/all-MiniLM-L12-v2"
-EMBEDDING_MODEL_NAME = "jhgan/ko-sroberta-multitask"
+BASE_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+INPUT_FILE = os.path.join(BASE_PATH, 'data', 'processed', 'cleaned_data.json')
+PERSIST_PATH = os.path.join(BASE_PATH, 'data', 'chroma_db')
+EMBEDDING_MODEL = "jhgan/ko-sroberta-multitask"
 
 def load_processed_data():
     if not os.path.exists(INPUT_FILE):
@@ -53,13 +52,13 @@ def build_vector_db():
     documents = create_documents(data)
     
     # 기존 DB 삭제 후 재생성
-    if os.path.exists(PERSIST_DIR):
-        print(f"기존 DB 삭제 중... ({PERSIST_DIR})")
-        shutil.rmtree(PERSIST_DIR)
+    if os.path.exists(PERSIST_PATH):
+        print(f"기존 DB 삭제 중... ({PERSIST_PATH})")
+        shutil.rmtree(PERSIST_PATH)
 
-    print(f"3. 임베딩 모델 로드 중... ({EMBEDDING_MODEL_NAME})")
+    print(f"3. 임베딩 모델 로드 중... ({EMBEDDING_MODEL})")
     embeddings = HuggingFaceEmbeddings(
-        model_name=EMBEDDING_MODEL_NAME,
+        model_name=EMBEDDING_MODEL,
         model_kwargs={'device': 'cpu'},
         encode_kwargs={'normalize_embeddings': True}
     )
@@ -68,10 +67,10 @@ def build_vector_db():
     vector_store = Chroma.from_documents(
         documents=documents,
         embedding=embeddings,
-        persist_directory=PERSIST_DIR
+        persist_directory=PERSIST_PATH
     )
     
-    print(f"벡터 DB 구축 완료! 저장 경로: {PERSIST_DIR}")
+    print(f"벡터 DB 구축 완료! 저장 경로: {PERSIST_PATH}")
 
     return vector_store
 
