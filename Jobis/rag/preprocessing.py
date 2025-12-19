@@ -2,9 +2,9 @@ import json
 import os
 import re
 
-# 경로 맟 설정
+# 경로 및 설정
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-INPUT_FILE = os.path.join(BASE_DIR, 'data', 'raw', 'jobis_rag_data.json')
+INPUT_FILE = os.path.join(BASE_DIR, 'data', 'raw', 'dummy_data.json')
 OUTPUT_FILE = os.path.join(BASE_DIR, 'data', 'processed', 'cleaned_data.json')
 
 # 디렉터리가 없으면 생성
